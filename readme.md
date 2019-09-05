@@ -248,3 +248,5 @@ export default Index
 ```
 
 This feels like a decent refactor by separating the concerns of rendering the tweets and inputting new ones
+
+I put the new components in separate files as we're bound to expand upon them soon.
