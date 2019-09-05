@@ -19,7 +19,7 @@
 
 - Depending on your programming language of choice setting up a simple webserver with an automated test can be a bit involved so this first iteration is about setting up our tooling
 - `$ npx create-next-app`
-- `$ yarn add --dev @testing-library/react jest`
+- `$ yarn add --dev @testing-library/react @testing-library/jest-dom jest`
 - Add `"test": "jest"` to the `scripts` section in your `package.json`
 - Add a file `index.test.jsx` inside `pages`
 - Add the following code
@@ -43,12 +43,13 @@ Change the test file to the following
 ````javascript
 import React from "react";
 import {render} from '@testing-library/react'
+import '@testing-library/jest-dom/extend-expect'
 import Index from "./index";
 
 describe("index", () => {
-    it("says hello", () => {
+    it("displays some insights from thoughtleaders", () => {
         const {getByText} = render(<Index/>);
-        expect(getByText('Hello, world')).toBeDefined()
+        expect(getByText('Hello, world')).toBeInTheDocument()
     })
 })
 ````
