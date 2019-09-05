@@ -1,15 +1,29 @@
-import React from 'react'
+import React, {useState} from 'react'
 
 const Index = () => {
-    const tweets = [
-        'Go is the best language',
-        'Scrum can get in the sea',
-        'You dont know what CI really means',
-    ]
+    const [tweets, setNewTweets] = useState([])
 
-    return (<ol>
-        {tweets.map(tweet => <li>{tweet}</li>)}
-    </ol>)
+    const addNewTweet = (tweet) => setNewTweets(tweets.concat([tweet]))
+
+    return <>
+        <TweetForm addNewTweet={addNewTweet}/>
+        <TweetList tweets={tweets}/>
+    </>
 }
+
+const TweetList = ({tweets}) => <ol>
+    {tweets.map(tweet => <li key={tweet}>{tweet}</li>)}
+</ol>
+
+const TweetForm = ({addNewTweet}) => {
+    const [tweetContent, setTweetContent] = useState("")
+
+    return <>
+        <label htmlFor={"newMsg"}>New tweet</label>
+        <textarea id="newMsg" onChange={(e) => setTweetContent(e.target.value)}/>
+        <button onClick={() => addNewTweet(tweetContent)}>send</button>
+    </>
+}
+
 
 export default Index

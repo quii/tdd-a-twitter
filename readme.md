@@ -86,7 +86,11 @@ The first iteration was easy enough but how do we make a start with our Twitter 
 
 We could start architecting all sorts of interesting microservices, monoserverless, jenkins-flow architecture.... or we could try and start with something super simple.
 
-Let's just render some hard-coded messages for now. We wont bother with dates, authors or any things like replying or retweeting.  
+Let's just render some hard-coded messages for now.
+
+### Aggressive descoping
+
+We wont bother with dates, authors or any things like replying or retweeting.  
 
 This will drive us forward and force us to fill out our UI a little and most importantly... is really easy!
 
@@ -143,3 +147,104 @@ export default Index
 ```
 
 Separating the data from the presentation feels like the right thing to do here.
+
+## Iteration 3 - Add a tweet
+
+It makes sense that users should be able to add tweets to our website. 
+
+### Aggressive descoping
+
+- No author
+- No validation
+- No dates
+- Just text! 
+
+### Red
+```javascript
+
+it('can post new messages', () => {
+    const msg = 'i like cats';
+
+    const {getByText, getByLabelText} = render(<Index/>);
+    fireEvent.change(getByLabelText('message'), {target: {value: msg}})
+    fireEvent.click(getByText('send'))
+
+    expect(getByText(msg)).toBeInTheDocument()
+})
+```
+
+### Green
+```javascript
+import React, {useState} from 'react'
+
+const Index = () => {
+    const [tweetContent, setTweetContent] = useState("")
+    const [tweets, setNewTweets] = useState([
+        'Go is the best language',
+        'Scrum can get in the sea',
+        'You dont know what CI really means',
+    ])
+
+    return <>
+        <div>
+            <label htmlFor={"newMsg"}>New tweet</label>
+            <textarea id="newMsg" onChange={(e) => setTweetContent(e.target.value)}/>
+            <button onClick={() => {
+                setNewTweets(tweets.concat([tweetContent]))
+            }}>send
+            </button>
+        </div>
+        < ol>
+            {tweets.map(tweet => <li key={tweet}>{tweet}</li>)}
+        </ol>
+    </>
+}
+
+export default Index
+```
+
+Yeah it doesn't look great but it's the minimum required to make the test pass and at this stage that's all we're concerned with. 
+
+We can make it nice in the refactor stage
+
+### Refactor
+
+Before refactoring it would be prudent to delete our old test (with the hard-coded data). 
+
+The first test's functionality (listing messages) is now implicitly tested by our second test so we may as well get rid of it. We should only keep hold of tests if they provide us value. This will free us up to remove the hard-coded data from our component too.
+
+Please note I arrived at this code over a number of small changes whilst constantly running my tests to make sure I haven't broken anything
+
+```javascript
+import React, {useState} from 'react'
+
+const Index = () => {
+    const [tweets, setNewTweets] = useState([])
+
+    const addNewTweet = (tweet) => setNewTweets(tweets.concat([tweet]))
+
+    return <>
+        <TweetForm addNewTweet={addNewTweet}/>
+        <TweetList tweets={tweets}/>
+    </>
+}
+
+const TweetList = ({tweets}) => <ol>
+    {tweets.map(tweet => <li key={tweet}>{tweet}</li>)}
+</ol>
+
+const TweetForm = ({addNewTweet}) => {
+    const [tweetContent, setTweetContent] = useState("")
+
+    return <>
+        <label htmlFor={"newMsg"}>New tweet</label>
+        <textarea id="newMsg" onChange={(e) => setTweetContent(e.target.value)}/>
+        <button onClick={() => addNewTweet(tweetContent)}>send</button>
+    </>
+}
+
+
+export default Index
+```
+
+This feels like a decent refactor by separating the concerns of rendering the tweets and inputting new ones

@@ -1,13 +1,16 @@
 import React from "react";
-import {render} from '@testing-library/react'
+import {render, fireEvent} from '@testing-library/react'
 import '@testing-library/jest-dom/extend-expect'
 import Index from "./index";
 
 describe("index", () => {
-    it("displays some thoughtleading messages", () => {
-        const {getByText} = render(<Index/>);
-        expect(getByText('Go is the best language')).toBeInTheDocument()
-        expect(getByText('Scrum can get in the sea')).toBeInTheDocument()
-        expect(getByText('You dont know what CI really means')).toBeInTheDocument()
+    it('can post new messages', () => {
+        const msg = 'i like cats';
+
+        const {getByText, getByLabelText} = render(<Index/>);
+        fireEvent.change(getByLabelText('New tweet'), {target: {value: msg}})
+        fireEvent.click(getByText('send'))
+
+        expect(getByText(msg)).toBeInTheDocument()
     })
 })
