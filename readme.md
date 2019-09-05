@@ -79,3 +79,67 @@ export default Index
 ````
 
 Our first iteration is done, run it with `yarn dev` and bask in the glory.
+
+## Iteration 2 - Display some hard-coded tweets
+
+The first iteration was easy enough but how do we make a start with our Twitter clone?
+
+We could start architecting all sorts of interesting microservices, monoserverless, jenkins-flow architecture.... or we could try and start with something super simple.
+
+Let's just render some hard-coded messages for now. We wont bother with dates, authors or any things like replying or retweeting.  
+
+This will drive us forward and force us to fill out our UI a little and most importantly... is really easy!
+
+### Red
+
+```javascript
+import React from "react";
+import {render} from '@testing-library/react'
+import '@testing-library/jest-dom/extend-expect'
+import Index from "./index";
+
+describe("index", () => {
+    it("displays some thoughtleading messages", () => {
+        const {getByText} = render(<Index/>);
+        expect(getByText('Go is the best language')).toBeInTheDocument()
+        expect(getByText('Scrum can get in the sea')).toBeInTheDocument()
+        expect(getByText('You dont know what CI really means')).toBeInTheDocument()
+    })
+})
+```
+
+### Green
+
+```javascript
+import React from 'react'
+
+const Index = () => <ol>
+    <li>Go is the best language</li>
+    <li>Scrum can get in the sea</li>
+    <li>You dont know what CI really means</li>
+</ol>
+
+export default Index
+```
+
+### Refactor
+
+```javascript
+import React from 'react'
+
+const Index = () => {
+    const tweets = [
+        'Go is the best language',
+        'Scrum can get in the sea',
+        'You dont know what CI really means',
+    ]
+
+    return (<ol>
+        {tweets.map(tweet => <li>{tweet}</li>)}
+    </ol>)
+}
+
+export default Index
+```
+
+Separating the data from the presentation feels like the right thing to do here.
